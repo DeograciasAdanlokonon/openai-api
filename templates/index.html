@@ -2,9 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .route {
+            background-color: #e9ffe9;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
+
+    <h1>AI Assistant Application Documentation</h1>
+
+    <div class="section">
+        <h2>Overview</h2>
+        <p>This AI Assistant is a web-based application that allows users to interact with an OpenAI-powered language model, learn new information, and save responses. It uses Flask for the backend, SQLite for storing data, and a CustomTkinter GUI for local desktop interaction.</p>
+    </div>
+
+    <div class="section">
+        <h2>Database</h2>
+        <p>The application uses an SQLite database called <code>competences.db</code> to store user prompts and assistant responses. The table structure is as follows:</p>
+        <ul>
+            <li><strong>Table:</strong> competences</li>
+            <li><strong>Columns:</strong>
+                <ul>
+                    <li><code>prompt</code> (TEXT): Stores the user input</li>
+                    <li><code>response</code> (TEXT): Stores the assistant's response</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>API Routes</h2>
+
+        <div class="route">
+            <h3>Home Route</h3>
+            <p><strong>Route:</strong> <code>/</code></p>
+            <p><strong>Method:</strong> GET</p>
+            <p><strong>Description:</strong> Serves the home page of the assistant application.</p>
+        </div>
+
+        <div class="route">
+            <h3>Get Response</h3>
+            <p><strong>Route:</strong> <code>/get_response</code></p>
+            <p><strong>Method:</strong> POST</p>
+            <p><strong>Parameters:</strong> JSON object with a <code>prompt</code> key.</p>
+            <p><strong>Description:</strong> Takes a user prompt and returns a response from the assistant. If the prompt exists in the database, the stored response is returned. Otherwise, it fetches a new response from OpenAI and saves it to the database.</p>
+            <p><strong>Example Request:</strong></p>
+            <code>
+                POST /get_response<br>
+                { "prompt": "What is AI?" }
+            </code>
+            <p><strong>Example Response:</strong></p>
+            <code>
+                { "response": "AI stands for Artificial Intelligence, which..." }
+            </code>
+        </div>
+
+        <div class="route">
+            <h3>Learn Route</h3>
+            <p><strong>Route:</strong> <code>/learn</code></p>
+            <p><strong>Method:</strong> POST</p>
+            <p><strong>Parameters:</strong> JSON object with <code>prompt</code> and <code>expected_response</code> keys.</p>
+            <p><strong>Description:</strong> Allows users to add a new prompt-response pair to the database. This teaches the assistant a specific response for a given prompt.</p>
+            <p><strong>Example Request:</strong></p>
+            <code>
+                POST /learn<br>
+                { "prompt": "Define Python.", "expected_response": "Python is a programming language..." }
+            </code>
+            <p><strong>Example Response:</strong></p>
+            <code>
+                { "message": "New competence added successfully!" }
+            </code>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Usage</h2>
+        <p>To use the assistant, deploy the application on a Flask-compatible environment. For testing API routes, use tools like <strong>Postman</strong> or <strong>cURL</strong> to send JSON requests. The CustomTkinter GUI can be run locally to communicate with the deployed API.</p>
+    </div>
+
+    <div class="section">
+        <h2>Error Handling</h2>
+        <p>Errors are logged in <code>assistant.log</code>, and error responses are returned in JSON format when exceptions occur in API requests.</p>
+    </div>
 
 </body>
 </html>
