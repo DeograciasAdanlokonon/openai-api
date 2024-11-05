@@ -26,15 +26,29 @@ conn.commit()
 # Logging setup
 logging.basicConfig(filename='assistant.log', level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
+# Initialize conversation context
+conversation_context = [{"role": "system", "content": "You are a helpful assistant."}]
+
 
 def async_get_response(prompt, result_container):
     try:
+        # Add user prompt to context
+        conversation_context.append({"role": "user", "content": prompt})
+
+        # Send the conversation history to the OpenAI API
         response = client.chat.completions.create(
-            model="gpt-4-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150
+            model="gpt-4o",
+            messages=conversation_context,
+            max_tokens=10000  # adjust max_tokens as needed
         )
+
+        # Get the assistant's reply
         reply = response.choices[0].message.content.strip()
+
+        # Add assistant reply to context
+        conversation_context.append({"role": "assistant", "content": reply})
+
+        # Save response in the result container
         result_container["data"] = reply
     except Exception as e:
         result_container["data"] = str(e)
@@ -54,12 +68,12 @@ def get_response():
         return jsonify({"response": result[0]})
 
     response_container = {"data": None}
-
     thread = threading.Thread(target=async_get_response, args=(prompt, response_container))
     thread.start()
     thread.join()
 
     if response_container["data"]:
+        # Save the new response in the database
         c.execute("INSERT INTO competences (prompt, response) VALUES (?, ?)", (prompt, response_container["data"]))
         conn.commit()
         return jsonify({"response": response_container["data"]})
